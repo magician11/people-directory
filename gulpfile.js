@@ -9,6 +9,7 @@ var webserver = require('gulp-webserver');
 var jshint = require('gulp-jshint');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
+var react = require('gulp-react');
 var minifyCSS = require('gulp-minify-css');
 var autoprefix = require('gulp-autoprefixer');
 var clean = require('del');
@@ -31,12 +32,12 @@ var appDirectory = {
 
 // files
 var appFiles = {
-  js: appDirectory.src + '/js/*.js',
+  jsx: appDirectory.src + '/js/*.jsx',
   assets: [appDirectory.src + '/images/', appDirectory.src + '/data'],
   scss: appDirectory.src + '/scss/*.scss',
   html: appDirectory.src + '/*.html',
   fonts: appDirectory.npmDir + '/font-awesome/fonts/*',
-  vendorJS: [appDirectory.npmDir + '/jquery/dist/jquery.min.js']
+  vendorJS: [appDirectory.npmDir + '/jquery/dist/jquery.js', appDirectory.npmDir + '/react/dist/react.js']
 };
 
 // end: location of directories and files
@@ -46,23 +47,18 @@ var appFiles = {
 // Build the app into the dist directory
 // ===============================================================================
 
-gulp.task('build-dist', ['vendor', 'scss', 'scripts', 'html', 'images', 'json']);
+gulp.task('build-dist', ['vendor', 'scss', 'scripts', 'html', 'assets']);
 
 // copy across vendor files
 gulp.task('vendor', function() {
 
-  // get all minified CSS files
-  // gulp.src(appFiles.vendorCSS)
-  // .pipe(concat('vendor.min.css'))
-  // .pipe(gulp.dest(appDirectory.dist + '/css'));
-
   // get fonts
-  // gulp.src(appFiles.fontAwesome)
-  // .pipe(gulp.dest(appDirectory.dist + '/fonts'));
+  gulp.src(appFiles.fonts)
+  .pipe(gulp.dest(appDirectory.dist + '/fonts'));
 
   // get all JS
   gulp.src(appFiles.vendorJS)
-  .pipe(uglify())
+  //.pipe(uglify())
   .pipe(concat('vendor.min.js'))
   .pipe(gulp.dest(appDirectory.dist + '/js'));
 
@@ -72,24 +68,25 @@ gulp.task('vendor', function() {
 gulp.task('scss', function() {
   return gulp.src(appFiles.scss)
   .pipe(scss({
-   includePaths: [appDirectory.npmDir + '/foundation-sites/scss']
- }))
+    includePaths: [appDirectory.npmDir + '/foundation-sites/scss']
+  }))
   .pipe(scss({
     errLogToConsole: true
   }))
   .pipe(autoprefix())
-  .pipe(minifyCSS())
-  .pipe(concat('pk.min.css'))
+  //.pipe(minifyCSS())
+  .pipe(concat('pd.min.css'))
   .pipe(gulp.dest(appDirectory.dist + '/css'));
 });
 
 // quality check our JS, minify and copy to dist
 gulp.task('scripts', function() {
-  return gulp.src(appFiles.js)
-  .pipe(jshint())
-  .pipe(jshint.reporter('default'))
-  .pipe(uglify())
-  .pipe(concat('pk.min.js'))
+  return gulp.src(appFiles.jsx)
+  //  .pipe(jshint())
+  //  .pipe(jshint.reporter('default'))
+  //  .pipe(uglify())
+  .pipe(react())
+  .pipe(concat('pd.min.js'))
   .pipe(gulp.dest(appDirectory.dist + '/js'));
 });
 
@@ -107,18 +104,11 @@ gulp.task('html', function() {
   .pipe(gulp.dest(appDirectory.dist));
 });
 
-// copy across our images
-gulp.task('images', function() {
+// copy across our assets
+gulp.task('assets', function() {
 
-  return gulp.src(appFiles.images)
-  .pipe(gulp.dest(appDirectory.dist + '/images'));
-});
-
-// copy across our datapacks files
-gulp.task('json', function() {
-
-  return gulp.src(appFiles.json)
-  .pipe(gulp.dest(appDirectory.dist + '/js'));
+  return gulp.src(appFiles.assets)
+  .pipe(gulp.dest(appDirectory.dist + '/assets'));
 });
 
 // end: build app into dist directory
@@ -144,8 +134,7 @@ gulp.task('clean', function(cb) {
 // watch our files for changes
 gulp.task('watch', function() {
   gulp.watch(appFiles.scss, ['scss']);
-  gulp.watch(appFiles.js, ['scripts']);
-  gulp.watch(appFiles.json, ['json']);
+  gulp.watch(appFiles.jsx, ['scripts']);
   gulp.watch(appFiles.html, ['html']);
 });
 
