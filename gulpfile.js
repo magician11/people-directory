@@ -86,6 +86,11 @@ gulp.task('scripts', function() {
   //  .pipe(jshint.reporter('default'))
   //  .pipe(uglify())
   .pipe(react())
+  .on('error', function(err) {
+    console.error('JSX ERROR in ' + err.fileName);
+    console.error(err.message);
+    this.end();
+  })
   .pipe(concat('pd.min.js'))
   .pipe(gulp.dest(appDirectory.dist + '/js'));
 });
