@@ -33,7 +33,7 @@ var appDirectory = {
 // files
 var appFiles = {
   jsx: appDirectory.src + '/js/*.jsx',
-  assets: [appDirectory.src + '/images/', appDirectory.src + '/data'],
+  assets: [appDirectory.src + '/images/*', appDirectory.src + '/data/*'],
   scss: appDirectory.src + '/scss/*.scss',
   html: appDirectory.src + '/*.html',
   fonts: appDirectory.npmDir + '/font-awesome/fonts/*',
@@ -107,7 +107,7 @@ gulp.task('html', function() {
 // copy across our assets
 gulp.task('assets', function() {
 
-  return gulp.src(appFiles.assets)
+  return gulp.src(appFiles.assets, {base:'src'})
   .pipe(gulp.dest(appDirectory.dist + '/assets'));
 });
 
@@ -136,6 +136,7 @@ gulp.task('watch', function() {
   gulp.watch(appFiles.scss, ['scss']);
   gulp.watch(appFiles.jsx, ['scripts']);
   gulp.watch(appFiles.html, ['html']);
+  gulp.watch(appFiles.assets, ['assets']);
 });
 
 // run our tasks on running 'gulp' from the command line
