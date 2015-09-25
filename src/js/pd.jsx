@@ -51,11 +51,26 @@ var PersonListItem = React.createClass({
 
 var PeopleList = React.createClass({
   render: function () {
-    var peopleItems = this.props.people.map(function (person) {
-      return (
-        <PersonListItem key={person.id} person={person} />
-      );
-    });
+    // var peopleItems = this.props.people.map(function (person) {
+    //   return (
+    //     <PersonListItem key={person.id} person={person} />
+    //   );
+    // });
+
+    var peopleItems = [];
+
+    this.props.people.forEach(function(person) {
+
+      var fullName = person.firstName + person.lastName;
+
+      if(fullName.toLowerCase().indexOf(this.props.filterText.toLowerCase()) === -1) {
+        return;
+      }
+      else {
+        peopleItems.push(<PersonListItem key={person.id} person={person}/>);
+      }
+
+    }.bind(this));
 
     return (
       <ul className="small-block-grid-1 medium-block-grid-3">
@@ -106,7 +121,7 @@ var PeopleApp = React.createClass({
       <div>
         <Header title={this.props.title} />
         <SearchBar onUserInput={this.handleUserInput} filterText={this.state.filterText}/>
-        <PeopleList people={this.state.people} />
+        <PeopleList people={this.state.people} filterText={this.state.filterText}/>
         <Footer/>
       </div>
     );
