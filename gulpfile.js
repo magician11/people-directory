@@ -32,7 +32,7 @@ var appDirectory = {
 
 // files
 var appFiles = {
-  jsx: appDirectory.src + '/js/*.jsx',
+  js: appDirectory.src + '/js/*',
   assets: [appDirectory.src + '/images/*', appDirectory.src + '/data/*'],
   scss: appDirectory.src + '/scss/*.scss',
   html: appDirectory.src + '/*.html',
@@ -81,7 +81,7 @@ gulp.task('scss', function() {
 
 // quality check our JS, minify and copy to dist
 gulp.task('scripts', function() {
-  return gulp.src(appFiles.jsx)
+  return gulp.src(appFiles.js)
   //  .pipe(jshint())
   //  .pipe(jshint.reporter('default'))
   //  .pipe(uglify())
@@ -139,7 +139,7 @@ gulp.task('clean', function(cb) {
 // watch our files for changes
 gulp.task('watch', function() {
   gulp.watch(appFiles.scss, ['scss']);
-  gulp.watch(appFiles.jsx, ['scripts']);
+  gulp.watch(appFiles.js, ['scripts']);
   gulp.watch(appFiles.html, ['html']);
   gulp.watch(appFiles.assets, ['assets']);
 });
