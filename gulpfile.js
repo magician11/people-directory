@@ -9,12 +9,15 @@ var webserver = require('gulp-webserver');
 var jshint = require('gulp-jshint');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
-var react = require('gulp-react');
 var minifyCSS = require('gulp-minify-css');
 var autoprefix = require('gulp-autoprefixer');
 var clean = require('del');
 var htmlhint = require('gulp-htmlhint');
 var htmlmin = require('gulp-htmlmin');
+var browserify = require('browserify');
+var babelify = require('babelify');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 
 // end: setup gulp, plugins and variables
 // ===============================================================================
@@ -32,6 +35,7 @@ var appDirectory = {
 
 // files
 var appFiles = {
+  jsRoot: appDirectory.src + '/js/pd.jsx',
   js: appDirectory.src + '/js/*',
   assets: [appDirectory.src + '/images/*', appDirectory.src + '/data/*'],
   scss: appDirectory.src + '/scss/*.scss',
@@ -47,22 +51,16 @@ var appFiles = {
 // Build the app into the dist directory
 // ===============================================================================
 
-gulp.task('build-dist', ['vendor', 'scss', 'scripts', 'html', 'assets']);
+gulp.task('build-dist', ['scss', 'scripts', 'html', 'assets']);
 
-// copy across vendor files
-gulp.task('vendor', function() {
-
-  // get fonts
-  gulp.src(appFiles.fonts)
-  .pipe(gulp.dest(appDirectory.dist + '/fonts'));
-
-  // get all JS
-  gulp.src(appFiles.vendorJS)
-  //.pipe(uglify())
-  .pipe(concat('vendor.min.js'))
-  .pipe(gulp.dest(appDirectory.dist + '/js'));
-
-});
+// // copy across vendor files
+// gulp.task('fonts', function() {
+//
+//   // get fonts
+//   gulp.src(appFiles.fonts)
+//   .pipe(gulp.dest(appDirectory.dist + '/fonts'));
+//
+// });
 
 // process our Sass
 gulp.task('scss', function() {
@@ -74,24 +72,24 @@ gulp.task('scss', function() {
     errLogToConsole: true
   }))
   .pipe(autoprefix())
-  //.pipe(minifyCSS())
+  .pipe(minifyCSS())
   .pipe(concat('pd.min.css'))
   .pipe(gulp.dest(appDirectory.dist + '/css'));
 });
 
 // quality check our JS, minify and copy to dist
 gulp.task('scripts', function() {
-  return gulp.src(appFiles.js)
-  //  .pipe(jshint())
-  //  .pipe(jshint.reporter('default'))
-  //  .pipe(uglify())
-  .pipe(react())
+
+  return browserify(appFiles.jsRoot)
+  .transform(babelify)
+  .bundle()
   .on('error', function(err) {
-    console.error('JSX ERROR in ' + err.fileName);
     console.error(err.message);
-    this.end();
+    this.emit('end');
   })
-  .pipe(concat('pd.min.js'))
+  .pipe(source('bundle.js'))
+  .pipe(buffer())
+  .pipe(uglify())
   .pipe(gulp.dest(appDirectory.dist + '/js'));
 });
 
