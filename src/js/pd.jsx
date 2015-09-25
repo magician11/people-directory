@@ -20,13 +20,16 @@ var Header = React.createClass({
 });
 
 var SearchBar = React.createClass({
+  handleChange: function(e) {
+    this.props.onUserInput(e.target.value);
+  },
   render: function () {
     return (
       <section className="row search-bar">
         <div className="small-8 small-offset-2 medium-offset-3 medium-6 columns">
           <fieldset>
             <legend>Search for someone...</legend>
-            <input type="search" placeholder="Marilyn Monroe"/>
+            <input type="search" placeholder="Marilyn Monroe" onChange={this.handleChange} value={this.props.filterText}/>
           </fieldset>
         </div>
       </section>
@@ -79,8 +82,11 @@ var PeopleApp = React.createClass({
   getInitialState: function() {
     return {
       people: [],
-      searchText: ''
+      filterText: ''
     }
+  },
+  handleUserInput: function(filterText) {
+    this.setState({ filterText: filterText });
   },
   componentDidMount: function() {
     $.ajax({
@@ -99,8 +105,8 @@ var PeopleApp = React.createClass({
     return (
       <div>
         <Header title={this.props.title} />
-        <SearchBar />
-        <PeopleList people={this.state.people}/>
+        <SearchBar onUserInput={this.handleUserInput} filterText={this.state.filterText}/>
+        <PeopleList people={this.state.people} />
         <Footer/>
       </div>
     );
