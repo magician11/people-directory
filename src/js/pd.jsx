@@ -1,11 +1,6 @@
-// import { Router, Route, Link, RouteHandler } from 'react-router';
+import { default as Router, Route, Link, RouteHandler } from 'react-router';
 
 var React = require('react');
-var ReactRouter = require('react-router');
-var Router = ReactRouter.Router;
-var Route = ReactRouter.Route;
-var Link = ReactRouter.Link;
-var RouteHandler = ReactRouter.RouteHandler;
 var peopleService = require('./data.js');
 
 var Header = React.createClass({
@@ -177,9 +172,6 @@ var PeopleApp = React.createClass({
   }
 });
 
-// var Route = Router.Route;
-// var RouteHandler = Router.RouteHandler;
-
 // declare our routes and their hierarchy
 var routes = (
   <Route handler={PeopleApp}>
@@ -188,6 +180,6 @@ var routes = (
   </Route>
 );
 
-ReactRouter.run(routes, ReactRouter.HashLocation, (Root) => {
+Router.run(routes, Router.HashLocation, (Root) => {
   React.render(<Root/>, document.body);
 });
