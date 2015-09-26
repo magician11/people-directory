@@ -1,37 +1,23 @@
 /* custom variables */
 
-/* override some foundation defaults */
-// $body-bg: $instagram-bg-colour;
-// $topbar-height: 4.7rem;
-// $h1-font-size: 2.4rem;
-// $body-font-family: Open Sans;
-// $header-font-family: Raleway;
-// $small-font-size: 80%;
-// $header-bottom-margin: 1em;
-// $topbar-bg: none;
-// $paragraph-font-size: 1.13rem;
-
-@import "foundation";
+@import "bootstrap";
+//@import "block-grid";
 
 /* custom styles */
 
 /* General app styling */
-
-body {
-  margin-top: 3rem;
+.people-summary {
+  display: flex;
+  flex-wrap: wrap;
 }
 
-/* The search bar */
-
-.search-bar {
-  margin: 0 auto 1rem;
+.people-summary > div {
+  flex-basis: calc(50% - 2rem);
+  margin: 1rem;
 }
 
-/* The person view */
-.person-view {
-  margin-top: 8rem;
-}
-
-.person-details {
-  margin-top: 1rem;
+@media (min-width: $screen-sm-min) {
+  .people-summary > div {
+    flex-basis: calc(33.33333% - 2rem);
+  }
 }

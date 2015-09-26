@@ -1,25 +1,18 @@
 import { default as Router, Route, Link, RouteHandler } from 'react-router';
+import { Navbar, Nav, NavItem, Input, Grid, Row, Col, Thumbnail } from 'react-bootstrap';
 
 var React = require('react');
+var $ = require('jquery');
 var peopleService = require('./data.js');
 
 var Header = React.createClass({
   render: function () {
     return (
-      <header className="contain-to-grid fixed">
-        <nav className="top-bar" data-topbar role="navigation">
-          <ul className="title-area">
-            <li className="name">
-              <h1><a href="/">{this.props.title}</a></h1>
-            </li>
-          </ul>
-          <section className="top-bar-section">
-            <ul className="right">
-              <li><a href="#">Add Person</a></li>
-            </ul>
-          </section>
-        </nav>
-      </header>
+      <Navbar brand={<Link to='/'>{this.props.title}</Link>} inverse toggleNavKey={0}>
+        <Nav right eventKey={0}>
+          <NavItem eventKey={1} href="/#/add">Add Person</NavItem>
+        </Nav>
+      </Navbar>
     );
   }
 });
@@ -30,14 +23,13 @@ var SearchBar = React.createClass({
   },
   render: function () {
     return (
-      <section className="row search-bar">
-        <div className="small-8 small-offset-2 medium-offset-3 medium-6 columns">
-          <fieldset>
-            <legend>Search for someone...</legend>
-            <input type="search" placeholder="Marilyn Monroe" onChange={this.handleChange} value={this.props.filterText}/>
-          </fieldset>
-        </div>
-      </section>
+      <Grid>
+        <Row>
+          <Col xs={12} md={6} mdOffset={3}>
+            <Input type="search" bsSize="large" label="Search for someone..." placeholder="Marilyn Monroe" onChange={this.handleChange} />
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 });
@@ -45,13 +37,15 @@ var SearchBar = React.createClass({
 var PersonListItem = React.createClass({
   render: function () {
     return (
-      <li className="text-center">
-        <Link to={'/person/' + this.props.person.id}>
-          <img src={'/assets/images/' + this.props.person.firstName.toLowerCase() + '-' + this.props.person.lastName.toLowerCase() + '.jpg'}/>
-          <h3>{this.props.person.firstName} {this.props.person.lastName}</h3>
-        </Link>
+      <Thumbnail
+        src={'/assets/images/' + this.props.person.firstName.toLowerCase() + '-' + this.props.person.lastName.toLowerCase() + '.jpg'}
+        alt={this.props.person.firstName + ' ' + this.props.person.lastName}
+        className="text-center"
+        >
+        <h3>{this.props.person.firstName} {this.props.person.lastName}</h3>
         <h6>{this.props.person.city}, {this.props.person.state} ({this.props.person.country})</h6>
-      </li>
+        <Link to={'/person/' + this.props.person.id}>read more</Link>
+      </Thumbnail>
     );
   }
 });
@@ -59,16 +53,14 @@ var PersonListItem = React.createClass({
 var PeopleList = React.createClass({
   render: function () {
 
-    var peopleItems = this.props.people.map(function (person) {
-      return (
-        <PersonListItem key={person.id} person={person}/>
-      );
+    let peopleList = this.props.people.map(function(person) {
+      return <PersonListItem key={person.id} person={person}/>;
     });
 
     return (
-      <ul className="small-block-grid-1 medium-block-grid-3">
-        {peopleItems}
-      </ul>
+      <section className="people-summary container">
+        {peopleList}
+      </section>
     );
   }
 });
@@ -101,29 +93,30 @@ var PersonPage = React.createClass({
   },
   render: function () {
     return (
-      <section className="row person-view">
-        <div className="medium-4 columns">
-          <img src={'/assets/images/' + this.state.person.firstName.toLowerCase() + '-' + this.state.person.lastName.toLowerCase() + '.jpg'}/>
-          <div className="person-details">
-            <p><strong>Country:</strong> {this.state.person.country}</p>
-            <p><strong>City:</strong> {this.state.person.city}</p>
-            <p><strong>State/Province:</strong> {this.state.person.state}</p>
-            <p><strong>Studio:</strong> <a href={this.state.person.studioUrl}>{this.state.person.studio}</a></p>
-          </div>
-        </div>
-
-        <div className="medium-8 columns">
-          <h2>{this.state.person.firstName} {this.state.person.lastName}</h2>
-          {this.state.person.description.split('\n').map(function(paragraph, i) {
-            return (
-              <p key={i}>
-                {paragraph}
-                <br/>
-              </p>
-            )
-          })}
-        </div>
-      </section>
+      <Grid>
+        <Row>
+          <Col md={4}>
+            <img src={'/assets/images/' + this.state.person.firstName.toLowerCase() + '-' + this.state.person.lastName.toLowerCase() + '.jpg'}/>
+            <div className="person-details">
+              <p><strong>Country:</strong> {this.state.person.country}</p>
+              <p><strong>City:</strong> {this.state.person.city}</p>
+              <p><strong>State/Province:</strong> {this.state.person.state}</p>
+              <p><strong>Studio:</strong> <a href={this.state.person.studioUrl}>{this.state.person.studio}</a></p>
+            </div>
+          </Col>
+          <Col md={8}>
+            <h2>{this.state.person.firstName} {this.state.person.lastName}</h2>
+            {this.state.person.description.split('\n').map(function(paragraph, i) {
+              return (
+                <p key={i}>
+                  {paragraph}
+                  <br/>
+                </p>
+              )
+            })}
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 });
@@ -160,11 +153,44 @@ var HomePage = React.createClass({
   }
 });
 
+var AddPersonPage = React.createClass({
+  render: function() {
+    return (
+      <section className="row add-person">
+        <h2>Add a new person</h2>
+
+        <form>
+          <div className="row">
+            <div className="small-6 columns">
+              <label>First Name
+                <input type="text" placeholder="Andrew" />
+              </label>
+            </div>
+            <div className="small-6 columns">
+              <label>Last Name
+                <input type="text" placeholder="Golightly" />
+              </label>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="small-12 columns">
+              <label>Description
+                <textarea placeholder="Tell us about yourself..."></textarea>
+              </label>
+            </div>
+          </div>
+        </form>
+      </section>
+    );
+  }
+});
+
 var PeopleApp = React.createClass({
   render: function () {
     return (
       <div>
-        <Header title='Baptiste Yoga Teacher Directory' />
+        <Header title='Baptiste Yoga Teachers' />
         <RouteHandler />
         <Footer />
       </div>
@@ -177,6 +203,7 @@ var routes = (
   <Route handler={PeopleApp}>
     <Route path="/" handler={HomePage}/>
     <Route path="person/:id" handler={PersonPage}/>
+    <Route path="add" handler={AddPersonPage}/>
   </Route>
 );
 

@@ -38,7 +38,7 @@ var appFiles = {
   jsRoot: appDirectory.src + '/js/pd.jsx',
   js: appDirectory.src + '/js/*',
   assets: [appDirectory.src + '/images/*', appDirectory.src + '/data/*'],
-  scss: appDirectory.src + '/scss/*.scss',
+  scss: appDirectory.src + '/scss/pd.scss',
   html: appDirectory.src + '/*.html',
   fonts: appDirectory.npmDir + '/font-awesome/fonts/*',
   vendorJS: [appDirectory.npmDir + '/jquery/dist/jquery.js', appDirectory.npmDir + '/react/dist/react.js']
@@ -66,10 +66,11 @@ gulp.task('build-dist', ['scss', 'scripts', 'html', 'assets']);
 gulp.task('scss', function() {
   return gulp.src(appFiles.scss)
   .pipe(scss({
-    includePaths: [appDirectory.npmDir + '/foundation-sites/scss']
+    includePaths: [appDirectory.npmDir + '/bootstrap-sass/assets/stylesheets']
   }))
   .pipe(scss({
-    errLogToConsole: true
+    errLogToConsole: true,
+    sourceComments : 'normal'
   }))
   .pipe(autoprefix())
   .pipe(minifyCSS())
