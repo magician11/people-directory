@@ -1,8 +1,12 @@
-var React = require('react');
-var Router = require('react-router');
-var peopleService = require('./data.js');
+// import { Router, Route, Link, RouteHandler } from 'react-router';
 
-var Link = Router.Link;
+var React = require('react');
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
+var Link = ReactRouter.Link;
+var RouteHandler = ReactRouter.RouteHandler;
+var peopleService = require('./data.js');
 
 var Header = React.createClass({
   render: function () {
@@ -90,12 +94,11 @@ var Footer = React.createClass({
 var PersonPage = React.createClass({
   getInitialState: function() {
     return {
-      person: []
+      person: {}
     };
   },
-  componentDidMount: function() {
+  componentWillMount: function() {
     peopleService.findById(this.props.params.id).done(function(person) {
-      console.log(person);
       this.setState({
         person:person
       });
@@ -103,9 +106,28 @@ var PersonPage = React.createClass({
   },
   render: function () {
     return (
-      <section className="row">
-        <h2>{this.state.person.firstName}</h2>
-        <p>todo</p>
+      <section className="row person-view">
+        <div className="medium-4 columns">
+          <img src={'/assets/images/' + this.state.person.firstName.toLowerCase() + '-' + this.state.person.lastName.toLowerCase() + '.jpg'}/>
+          <div className="person-details">
+            <p><strong>Country:</strong> {this.state.person.country}</p>
+            <p><strong>City:</strong> {this.state.person.city}</p>
+            <p><strong>State/Province:</strong> {this.state.person.state}</p>
+            <p><strong>Studio:</strong> <a href={this.state.person.studioUrl}>{this.state.person.studio}</a></p>
+          </div>
+        </div>
+
+        <div className="medium-8 columns">
+          <h2>{this.state.person.firstName} {this.state.person.lastName}</h2>
+          {this.state.person.description.split('\n').map(function(paragraph, i) {
+            return (
+              <p key={i}>
+                {paragraph}
+                <br/>
+              </p>
+            )
+          })}
+        </div>
       </section>
     );
   }
@@ -131,11 +153,9 @@ var HomePage = React.createClass({
       this.setState({
         people:people
       });
-      console.log(people);
     }.bind(this));
   },
   render: function() {
-    console.log('rendering homepage');
     return (
       <div>
         <SearchBar onUserInput={this.handleUserInput} filterText={this.props.filterText}/>
@@ -157,8 +177,8 @@ var PeopleApp = React.createClass({
   }
 });
 
-var Route = Router.Route;
-var RouteHandler = Router.RouteHandler;
+// var Route = Router.Route;
+// var RouteHandler = Router.RouteHandler;
 
 // declare our routes and their hierarchy
 var routes = (
@@ -168,6 +188,6 @@ var routes = (
   </Route>
 );
 
-Router.run(routes, Router.HashLocation, (Root) => {
+ReactRouter.run(routes, ReactRouter.HashLocation, (Root) => {
   React.render(<Root/>, document.body);
 });
