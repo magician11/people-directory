@@ -1,5 +1,5 @@
 import { default as Router, Route, Link, RouteHandler } from 'react-router';
-import { Navbar, Nav, NavItem, Input, Grid, Row, Col, Thumbnail, PageHeader, Panel } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, Input, Grid, Row, Col, Thumbnail, PageHeader, Panel, ButtonInput } from 'react-bootstrap';
 
 var React = require('react');
 var $ = require('jquery');
@@ -10,7 +10,8 @@ var Header = React.createClass({
     return (
       <Navbar brand={<Link to='/'>{this.props.title}</Link>} inverse toggleNavKey={0}>
         <Nav right eventKey={0}>
-          <NavItem eventKey={1} href="/#/add">Add Person</NavItem>
+          <NavItem eventKey={1} href="/">View Everyone</NavItem>
+          <NavItem eventKey={2} href="/#/add">Add Person</NavItem>
         </Nav>
       </Navbar>
     );
@@ -43,8 +44,8 @@ var PersonListItem = React.createClass({
         className="text-center"
         >
         <h3>{this.props.person.firstName} {this.props.person.lastName}</h3>
-        <h6>{this.props.person.city}, {this.props.person.state} ({this.props.person.country})</h6>
-        <Link to={'/person/' + this.props.person.id}>read more</Link>
+        <p>{this.props.person.city}, {this.props.person.state} ({this.props.person.country})</p>
+        <p><Link to={'/person/' + this.props.person.id}>view details &rarr;</Link></p>
       </Thumbnail>
     );
   }
@@ -58,7 +59,7 @@ var PeopleList = React.createClass({
     });
 
     return (
-      <section className="people-summary container">
+      <section className="people-list container">
         {peopleList}
       </section>
     );
@@ -68,11 +69,9 @@ var PeopleList = React.createClass({
 var Footer = React.createClass({
   render: function () {
     return (
-      <footer className="row ">
-        <div className="small-8 small-offset-2 columns text-center">
-          <hr/>
-          <p>Made by the team at <a href="http://www.sunbowl.ca/">sunbowl.ca</a></p>
-        </div>
+      <footer className="container text-center">
+        <hr/>
+        <p>Made by the team at <a href="http://www.sunbowl.ca/">sunbowl.ca</a></p>
       </footer>
     );
   }
@@ -100,12 +99,16 @@ var PersonPage = React.createClass({
         <Row>
           <Col md={4} className="text-center">
             <img className="img-circle" src={'/assets/images/' + this.state.person.firstName.toLowerCase() + '-' + this.state.person.lastName.toLowerCase() + '.jpg'}/>
-            <Panel className="person-details">
-              <p><strong>Country:</strong> {this.state.person.country}</p>
-              <p><strong>City:</strong> {this.state.person.city}</p>
-              <p><strong>State/Province:</strong> {this.state.person.state}</p>
-              <p><strong>Studio:</strong> <a href={this.state.person.studioUrl}>{this.state.person.studio}</a></p>
-            </Panel>
+            <Row>
+              <Col xs={10} xsOffset={1}>
+                <Panel className="person-details">
+                  <p><strong>Country:</strong> {this.state.person.country}</p>
+                  <p><strong>City:</strong> {this.state.person.city}</p>
+                  <p><strong>State/Province:</strong> {this.state.person.state}</p>
+                  <p><strong>Studio:</strong> <a href={this.state.person.studioUrl}>{this.state.person.studio}</a></p>
+                </Panel>
+              </Col>
+            </Row>
           </Col>
           <Col md={8}>
             {this.state.person.description.split('\n').map(function(paragraph, i) {
@@ -156,34 +159,34 @@ var HomePage = React.createClass({
 });
 
 var AddPersonPage = React.createClass({
+  handleSubmit: function(e) {
+    e.preventDefault();
+    alert('Todo: add this info to a databse');
+  },
   render: function() {
     return (
-      <section className="row add-person">
-        <h2>Add a new person</h2>
-
-        <form>
-          <div className="row">
-            <div className="small-6 columns">
-              <label>First Name
-                <input type="text" placeholder="Andrew" />
-              </label>
-            </div>
-            <div className="small-6 columns">
-              <label>Last Name
-                <input type="text" placeholder="Golightly" />
-              </label>
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="small-12 columns">
-              <label>Description
-                <textarea placeholder="Tell us about yourself..."></textarea>
-              </label>
-            </div>
-          </div>
-        </form>
-      </section>
+      <Grid>
+        <Row>
+          <Col xs={10} xsOffset={1} md={8} mdOffset={2}>
+            <h2>Add a new person</h2>
+            <form onSubmit={this.handleSubmit}>
+              <Input type="text" label="First Name" placeholder="Andrew" />
+              <Input type="text" label="Last Name" placeholder="Golightly" />
+              <Input type="file" label="Profile photo" help="Upload .jpg images only." />
+              <Input type="text" label="City" placeholder="Minneapolis" />
+              <Input type="text" label="State/Province" placeholder="NJ" />
+              <Input type="select" label="Country">
+                <option value="USA">USA</option>
+                <option value="Canada">Canada</option>
+              </Input>
+              <Input type="text" label="Studio" placeholder="Power Yoga Canada" />
+              <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" />
+              <Input type="textarea" label="Description" placeholder="Tell us about this person..." />
+              <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block"/>
+            </form>
+          </Col>
+        </Row>
+      </Grid>
     );
   }
 });

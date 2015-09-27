@@ -1,32 +1,18 @@
-/* custom variables */
-
 @import "bootstrap";
-//@import "block-grid";
-
-/* custom styles */
-
-/* General app styling */
 
 /* List of people on the homepage */
-.people-summary {
+.people-list {
   display: flex;
   flex-wrap: wrap;
 }
 
-.people-summary > div {
+.people-list > div {
   flex-basis: calc(50% - 2rem);
   margin: 1rem;
 }
 
-/* Person details */
-
-.person-details {
-    max-width: 69%;
-    margin: 1rem auto;
-}
-
 @media (min-width: $screen-sm-min) {
-  .people-summary > div {
+  .people-list > div {
     flex-basis: calc(33.33333% - 2rem);
   }
 }
