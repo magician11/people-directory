@@ -1,5 +1,5 @@
 import { default as Router, Route, Link, RouteHandler } from 'react-router';
-import { Navbar, Nav, NavItem, Input, Grid, Row, Col, Thumbnail } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, Input, Grid, Row, Col, Thumbnail, PageHeader, Panel } from 'react-bootstrap';
 
 var React = require('react');
 var $ = require('jquery');
@@ -94,18 +94,20 @@ var PersonPage = React.createClass({
   render: function () {
     return (
       <Grid>
+        <Row className="text-center">
+          <PageHeader>{this.state.person.firstName} {this.state.person.lastName}</PageHeader>
+        </Row>
         <Row>
-          <Col md={4}>
-            <img src={'/assets/images/' + this.state.person.firstName.toLowerCase() + '-' + this.state.person.lastName.toLowerCase() + '.jpg'}/>
-            <div className="person-details">
+          <Col md={4} className="text-center">
+            <img className="img-circle" src={'/assets/images/' + this.state.person.firstName.toLowerCase() + '-' + this.state.person.lastName.toLowerCase() + '.jpg'}/>
+            <Panel className="person-details">
               <p><strong>Country:</strong> {this.state.person.country}</p>
               <p><strong>City:</strong> {this.state.person.city}</p>
               <p><strong>State/Province:</strong> {this.state.person.state}</p>
               <p><strong>Studio:</strong> <a href={this.state.person.studioUrl}>{this.state.person.studio}</a></p>
-            </div>
+            </Panel>
           </Col>
           <Col md={8}>
-            <h2>{this.state.person.firstName} {this.state.person.lastName}</h2>
             {this.state.person.description.split('\n').map(function(paragraph, i) {
               return (
                 <p key={i}>
