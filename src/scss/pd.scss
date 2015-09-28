@@ -1,3 +1,6 @@
+$font-family-base: 'Open Sans';
+$font-size-base: 15px;
+
 @import "bootstrap";
 
 /* List of people on the homepage */
@@ -20,4 +23,8 @@
 /* Detailed view of a person */
 .person-details {
     margin-top: 1rem;
+}
+
+.person-thumbnail {
+  width: 22rem;
 }

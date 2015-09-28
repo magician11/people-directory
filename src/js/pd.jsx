@@ -39,7 +39,7 @@ var PersonListItem = React.createClass({
   render: function () {
     return (
       <Thumbnail
-        src={'/assets/images/' + this.props.person.fname.toLowerCase() + '-' + this.props.person.lname.toLowerCase() + '.jpg'}
+        src={this.props.person.image}
         alt={this.props.person.fname + ' ' + this.props.person.lname}
         className="text-center"
         key={this.props.key}
@@ -112,7 +112,7 @@ var PersonPage = React.createClass({
         </Row>
         <Row>
           <Col md={4} className="text-center">
-            <img className="img-circle" src={'/assets/images/' + this.state.person.fname.toLowerCase() + '-' + this.state.person.lname.toLowerCase() + '.jpg'}/>
+            <img className="img-circle person-thumbnail" src={this.state.person.image} />
             <Row>
               <Col xs={10} xsOffset={1}>
                 <Panel className="person-details">
@@ -129,7 +129,6 @@ var PersonPage = React.createClass({
               return (
                 <p key={i}>
                   {paragraph}
-                  <br/>
                 </p>
               )
             })}
@@ -145,8 +144,7 @@ var HomePage = React.createClass({
   getInitialState: function() {
     return {
       people: [],
-      filterText: '',
-      filteredList: []
+      filterText: ''
     };
   },
   componentWillMount: function() {
@@ -184,29 +182,40 @@ var AddPersonPage = React.createClass({
       person[inputFieldRef] = this.refs[inputFieldRef].getValue();
     }.bind(this));
 
-    var ref = new Firebase("https://people-directory.firebaseio.com/");
-    ref.push(person);
+    var fileReader = new FileReader();
+    fileReader.onload = function(e) {
+
+      person['image'] = e.target.result;
+
+      var ref = new Firebase("https://people-directory.firebaseio.com/");
+      ref.push(person);
+
+    };
+
+    fileReader.readAsDataURL(this.refs['image'].getInputDOMNode().files[0]);
+
     this.setState({
       formSubmitted: true
     });
+
     return;
   },
   render: function() {
 
     if(!this.state.formSubmitted) {
       var form = <form onSubmit={this.handleSubmit}>
-        <Input type="text" label="First Name" ref="fname" placeholder="Andrew" required/>
-        <Input type="text" label="Last Name" ref="lname" placeholder="Golightly" required/>
-        <Input type="file" label="Profile photo" help="Upload .jpg images only." />
-        <Input type="text" label="City" placeholder="Minneapolis" ref="city" required/>
-        <Input type="text" label="State/Province" placeholder="NJ" ref="state" required/>
-        <Input type="select" label="Country" ref="country" required>
+        <Input type="text" label="First Name" ref="fname" placeholder="Andrew" />
+        <Input type="text" label="Last Name" ref="lname" placeholder="Golightly" />
+        <Input type="file" label="Profile photo" help="Upload .jpg images only."  ref="image"/>
+        <Input type="text" label="City" placeholder="Minneapolis" ref="city" />
+        <Input type="text" label="State/Province" placeholder="NJ" ref="state" />
+        <Input type="select" label="Country" ref="country" >
           <option value="USA">USA</option>
           <option value="Canada">Canada</option>
         </Input>
-        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studio" required/>
-        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioUrl" required/>
-        <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" required/>
+        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studio" />
+        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioUrl" />
+        <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" />
         <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block"/>
       </form>;
     }
