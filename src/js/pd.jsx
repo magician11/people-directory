@@ -204,19 +204,19 @@ var AddPersonPage = React.createClass({
 
     if(!this.state.formSubmitted) {
       var form = <form onSubmit={this.handleSubmit}>
-        <Input type="text" label="First Name" ref="fname" placeholder="Andrew" />
-        <Input type="text" label="Last Name" ref="lname" placeholder="Golightly" />
-        <Input type="file" label="Profile photo" help="Upload .jpg images only."  ref="image"/>
-        <Input type="text" label="City" placeholder="Minneapolis" ref="city" />
-        <Input type="text" label="State/Province" placeholder="NJ" ref="state" />
-        <Input type="select" label="Country" ref="country" >
+        <Input type="text" label="First Name" ref="fname" placeholder="Andrew" required />
+        <Input type="text" label="Last Name" ref="lname" placeholder="Golightly" required />
+        <Input type="file" label="Profile photo" accept="image/*" ref="image" required />
+        <Input type="text" label="City" placeholder="Minneapolis" ref="city" required />
+        <Input type="text" label="State/Province" placeholder="NJ" ref="state" required />
+        <Input type="select" label="Country" ref="country" required >
           <option value="USA">USA</option>
           <option value="Canada">Canada</option>
         </Input>
-        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studio" />
-        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioUrl" />
-        <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" />
-        <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block"/>
+        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studio" required />
+        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioUrl" required />
+        <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" required />
+        <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block" />
       </form>;
     }
 
