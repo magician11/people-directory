@@ -1,4 +1,5 @@
 var $ = require('jquery');
+var Firebase = require("firebase");
 
 var findById = function (id) {
   var deferred = $.Deferred();
@@ -24,7 +25,13 @@ findByName = function (searchKey) {
   return deferred.promise();
 },
 
+peopleDirectoryRef = null,
+
 init = function () {
+
+  console.log('Initialising database stuff...');
+
+  peopleDirectoryRef = new Firebase("https://people-directory.firebaseio.com/");
 
   var deferred = $.Deferred();
   var peopleDataUrl = '/assets/data/test-data.json';
@@ -45,11 +52,18 @@ init = function () {
   return deferred.promise();
 },
 
+addPerson = function(person) {
+
+  peopleDirectoryRef.push(person);
+
+},
+
 people = [];
 
 // The public API
 module.exports = {
   findById: findById,
   findByName: findByName,
-  init: init
+  init: init,
+  addPerson: addPerson
 };
