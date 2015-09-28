@@ -37,7 +37,7 @@ var appDirectory = {
 var appFiles = {
   jsRoot: appDirectory.src + '/js/pd.jsx',
   js: appDirectory.src + '/js/*',
-  assets: [appDirectory.src + '/images/*', appDirectory.src + '/data/*'],
+  assets: [appDirectory.src + '/images/*'],
   scss: appDirectory.src + '/scss/pd.scss',
   html: appDirectory.src + '/*.html',
   fonts: appDirectory.npmDir + '/font-awesome/fonts/*',
