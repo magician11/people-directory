@@ -2,7 +2,6 @@ import { default as Router, Route, Link, RouteHandler } from 'react-router';
 import { Navbar, Nav, NavItem, Input, Grid, Row, Col, Thumbnail, PageHeader, Panel, ButtonInput, Alert } from 'react-bootstrap';
 
 var React = require('react');
-var ReactFireMixin = require('reactfire');
 var Firebase = require("firebase");
 
 var Header = React.createClass({
@@ -37,16 +36,17 @@ var SearchBar = React.createClass({
 
 var PersonListItem = React.createClass({
   render: function () {
+
     return (
       <Thumbnail
         src={this.props.person.image}
         alt={this.props.person.firstName + ' ' + this.props.person.lastName}
         className="text-center"
-        key={this.props.key}
+        key={this.props.firebaseKey}
         >
         <h3>{this.props.person.firstName} {this.props.person.lastName}</h3>
         <p>{this.props.person.city}, {this.props.person.state} ({this.props.person.country})</p>
-        <p><Link to={'/person/' + this.props.person['.key']}>view details &rarr;</Link></p>
+        <p><Link to={'/person/' + this.props.firebaseKey}>view details &rarr;</Link></p>
       </Thumbnail>
     );
   }
@@ -57,20 +57,16 @@ var PeopleList = React.createClass({
 
     var peopleList = [];
 
-    this.props.people.forEach(function(person) {
+    for(var fbKey in this.props.people) {
 
-      //console.log(person);
+      var person = this.props.people[fbKey];
 
       var fullName = person.firstName + person.lastName;
 
-      if(fullName.toLowerCase().indexOf(this.props.filterText.toLowerCase()) === -1) {
-        return;
+      if(fullName.toLowerCase().indexOf(this.props.filterText.toLowerCase()) !== -1) {
+        peopleList.push(<PersonListItem key={fbKey} firebaseKey={fbKey} person={person}/>);
       }
-      else {
-        peopleList.push(<PersonListItem key={person['.key']} person={person}/>);
-      }
-
-    }.bind(this));
+    }
 
     return (
       <section className="people-list container">
@@ -92,7 +88,7 @@ var Footer = React.createClass({
 });
 
 var PersonPage = React.createClass({
-  mixins: [ReactFireMixin],
+
   getInitialState: function() {
     return {
       person: {
@@ -104,8 +100,12 @@ var PersonPage = React.createClass({
     };
   },
   componentWillMount: function() {
-    var ref = new Firebase("https://people-directory.firebaseio.com/baptiste/" + this.props.params.id);
-    this.bindAsObject(ref, "person");
+    this.ref = new Firebase("https://people-directory.firebaseio.com/baptiste/" + this.props.params.id);
+    this.ref.on('value', function(data) {
+
+      this.setState({person: data.val()});
+
+    }.bind(this));
   },
   render: function () {
     return (
@@ -143,16 +143,21 @@ var PersonPage = React.createClass({
 });
 
 var HomePage = React.createClass({
-  mixins: [ReactFireMixin],
+
   getInitialState: function() {
     return {
-      people: [],
+      people: {},
       filterText: ''
     };
   },
   componentWillMount: function() {
-    var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
-    this.bindAsArray(ref, "people");
+    this.ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
+    this.ref.on('value', function(data) {
+
+      this.setState({people: data.val()});
+
+    }.bind(this));
+
   },
   handleUserInput: function(filterText) {
     this.setState({
@@ -160,10 +165,20 @@ var HomePage = React.createClass({
     });
   },
   render: function() {
+
+    var content;
+
+    if(Object.keys(this.state.people).length === 0) {
+      content = <h3 className="text-center"><i className="fa fa-spinner fa-3x fa-pulse"></i><br/>Loading</h3>;
+    }
+    else {
+      content = <PeopleList people={this.state.people} filterText={this.state.filterText} />;
+    }
+
     return (
       <div>
         <SearchBar onUserInput={this.handleUserInput} />
-        <PeopleList people={this.state.people} filterText={this.state.filterText} />
+        { content }
       </div>
     );
   }
