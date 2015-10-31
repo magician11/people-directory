@@ -40,11 +40,11 @@ var PersonListItem = React.createClass({
     return (
       <Thumbnail
         src={this.props.person.image}
-        alt={this.props.person.fname + ' ' + this.props.person.lname}
+        alt={this.props.person.firstName + ' ' + this.props.person.lastName}
         className="text-center"
         key={this.props.key}
         >
-        <h3>{this.props.person.fname} {this.props.person.lname}</h3>
+        <h3>{this.props.person.firstName} {this.props.person.lastName}</h3>
         <p>{this.props.person.city}, {this.props.person.state} ({this.props.person.country})</p>
         <p><Link to={'/person/' + this.props.person['.key']}>view details &rarr;</Link></p>
       </Thumbnail>
@@ -59,7 +59,9 @@ var PeopleList = React.createClass({
 
     this.props.people.forEach(function(person) {
 
-      var fullName = person.fname + person.lname;
+      //console.log(person);
+
+      var fullName = person.firstName + person.lastName;
 
       if(fullName.toLowerCase().indexOf(this.props.filterText.toLowerCase()) === -1) {
         return;
@@ -94,21 +96,22 @@ var PersonPage = React.createClass({
   getInitialState: function() {
     return {
       person: {
-        fname: '',
-        lname: '',
+        firstName: '',
+        middleNames: '',
+        lastName: '',
         description: ''
       }
     };
   },
   componentWillMount: function() {
-    var ref = new Firebase("https://people-directory.firebaseio.com/" + this.props.params.id);
+    var ref = new Firebase("https://people-directory.firebaseio.com/baptiste/" + this.props.params.id);
     this.bindAsObject(ref, "person");
   },
   render: function () {
     return (
       <Grid>
         <Row className="text-center">
-          <PageHeader>{this.state.person.fname} {this.state.person.lname}</PageHeader>
+          <PageHeader>{this.state.person.firstName} {this.state.person.lastName}</PageHeader>
         </Row>
         <Row>
           <Col md={4} className="text-center">
@@ -119,7 +122,7 @@ var PersonPage = React.createClass({
                   <p><strong>Country:</strong> {this.state.person.country}</p>
                   <p><strong>City:</strong> {this.state.person.city}</p>
                   <p><strong>State/Province:</strong> {this.state.person.state}</p>
-                  <p><strong>Studio:</strong> <a href={this.state.person.studioUrl}>{this.state.person.studio}</a></p>
+                  <p><strong>Studio:</strong> <a href={this.state.person.studioURL}>{this.state.person.studioName}</a></p>
                 </Panel>
               </Col>
             </Row>
@@ -148,7 +151,7 @@ var HomePage = React.createClass({
     };
   },
   componentWillMount: function() {
-    var ref = new Firebase("https://people-directory.firebaseio.com/");
+    var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
     this.bindAsArray(ref, "people");
   },
   handleUserInput: function(filterText) {
@@ -187,7 +190,7 @@ var AddPersonPage = React.createClass({
 
       person['image'] = e.target.result;
 
-      var ref = new Firebase("https://people-directory.firebaseio.com/");
+      var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
       ref.push(person);
 
     };
@@ -204,8 +207,8 @@ var AddPersonPage = React.createClass({
 
     if(!this.state.formSubmitted) {
       var form = <form onSubmit={this.handleSubmit}>
-        <Input type="text" label="First Name" ref="fname" placeholder="Andrew" required />
-        <Input type="text" label="Last Name" ref="lname" placeholder="Golightly" required />
+        <Input type="text" label="First Name" ref="firstName" placeholder="Andrew" required />
+        <Input type="text" label="Last Name" ref="lastName" placeholder="Golightly" required />
         <Input type="file" label="Profile photo" accept="image/*" ref="image" required />
         <Input type="text" label="City" placeholder="Minneapolis" ref="city" required />
         <Input type="text" label="State/Province" placeholder="NJ" ref="state" required />
