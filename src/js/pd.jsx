@@ -231,8 +231,8 @@ var AddPersonPage = React.createClass({
           <option value="USA">USA</option>
           <option value="Canada">Canada</option>
         </Input>
-        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studio" required />
-        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioUrl" required />
+        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" required />
+        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" required />
         <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" required />
         <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block" />
       </form>;
