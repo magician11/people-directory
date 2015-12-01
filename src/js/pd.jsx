@@ -1,8 +1,10 @@
 import { default as Router, Route, Link, RouteHandler } from 'react-router';
-import { Navbar, Nav, NavItem, Input, Grid, Row, Col, Thumbnail, PageHeader, Panel, ButtonInput, Alert } from 'react-bootstrap';
-
-var React = require('react');
-var Firebase = require("firebase");
+import { Navbar, Nav, NavItem, Input, Grid, Row, Col, Thumbnail, PageHeader, Panel, ButtonInput, Alert, Button } from 'react-bootstrap';
+import ScrollListenerMixin from 'react-scroll-components';
+import React from 'react';
+import Firebase from 'firebase';
+import FirebaseUtil from 'firebase-util';
+import EditPerson from './EditPerson.jsx';
 
 var Header = React.createClass({
   render: function () {
@@ -18,15 +20,30 @@ var Header = React.createClass({
 });
 
 var SearchBar = React.createClass({
-  handleChange: function(e) {
-    this.props.onUserInput(e.target.value);
+  getInitialState: function() {
+    return {
+      searchText: this.props.searchText
+    };
+  },
+  onSearchChange: function(e) {
+    this.setState({searchText:e.target.value});
+  },
+  handleSearch: function(e) {
+    this.props.onUserInput(this.state.searchText, 'lastName');
   },
   render: function () {
     return (
       <Grid>
         <Row>
           <Col xs={12} md={6} mdOffset={3}>
-            <Input type="search" bsSize="large" label="Search for someone..." placeholder="Marilyn Monroe" onChange={this.handleChange} />
+            <Row>
+              <Col xs={8} >
+                <Input type="search" bsSize="large" placeholder="Marilyn Monroe" onChange={this.onSearchChange} value={this.state.searchText}/>
+              </Col>
+              <Col xs={4} >
+                <Button bsStyle="primary" bsSize="large" onClick={this.handleSearch} >Search</Button>
+              </Col>
+            </Row>
           </Col>
         </Row>
       </Grid>
@@ -57,15 +74,18 @@ var PeopleList = React.createClass({
 
     var peopleList = [];
 
+    console.log('Rendering people');
+    console.log(this.props.people);
+
     for(var fbKey in this.props.people) {
 
       var person = this.props.people[fbKey];
 
-      var fullName = person.firstName + person.lastName;
+      //    var fullName = person.firstName + person.lastName;
 
-      if(fullName.toLowerCase().indexOf(this.props.filterText.toLowerCase()) !== -1) {
-        peopleList.push(<PersonListItem key={fbKey} firebaseKey={fbKey} person={person}/>);
-      }
+      //  if(fullName.toLowerCase().indexOf(this.props.filterText.toLowerCase()) !== -1) {
+      peopleList.push(<PersonListItem key={fbKey} firebaseKey={fbKey} person={person}/>);
+      //  }
     }
 
     return (
@@ -135,6 +155,7 @@ var PersonPage = React.createClass({
                 </p>
               )
             })}
+            <p><Link to={'/edit/' + this.props.params.id}>Edit</Link></p>
           </Col>
         </Row>
       </Grid>
@@ -146,139 +167,162 @@ var HomePage = React.createClass({
 
   getInitialState: function() {
     return {
-      people: {},
-      filterText: ''
+      people: {}
     };
   },
-  componentWillMount: function() {
-    this.ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
-    this.ref.on('value', function(data) {
+  // componentWillMount: function() {
+  //
+  //   var ref = new Firebase.util.Scroll(new Firebase("https://people-directory.firebaseio.com/baptiste"), 'lastName');
+  //   ref.on('child_added', function(data) {
+  //
+  //     var peopleList = this.state.people;
+  //     peopleList[data.key()] = data.val();
+  //     console.log('Adding ' + data.val().firstName);
+  //     this.setState({people: peopleList});
+  //
+  //   }.bind(this));
+  //
+  //   ref.scroll.next(9);
+  //
+  //   setTimeout(function(){
+  //     ref.scroll.next(9);
+  //   }, 8000);
+  //
+  // },
+  // onPageScroll: function(scrollPosition) {
+  //   console.log('Currently at position: ' + scrollPosition);
+  // },
+  handleUserInput: function(searchText, searchField) {
 
-      this.setState({people: data.val()});
+    console.log('Doing a search for ' + searchText + ' in the field ' + searchField);
 
+    var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
+    ref.orderByChild(searchField).startAt(searchText).endAt(searchText + '\uf8ff').on("value", function(snapshot) {
+
+      this.setState({
+        people: snapshot.val()
+      });
     }.bind(this));
 
-  },
-  handleUserInput: function(filterText) {
-    this.setState({
-      filterText: filterText
-    });
   },
   render: function() {
 
     var content;
 
+    console.log(this.state.people);
+
     if(Object.keys(this.state.people).length === 0) {
-      content = <h3 className="text-center"><i className="fa fa-spinner fa-3x fa-pulse"></i><br/>Loading</h3>;
+      content = <h3 className="text-center">Begin by searching above.</h3>;
+      }
+      else {
+        content = <PeopleList people={this.state.people} />;
+      }
+
+      return (
+        <div>
+          <SearchBar onUserInput={this.handleUserInput} />
+          { content }
+        </div>
+      );
     }
-    else {
-      content = <PeopleList people={this.state.people} filterText={this.state.filterText} />;
+  });
+
+  var AddPersonPage = React.createClass({
+    getInitialState: function() {
+      return {
+        formSubmitted: false
+      };
+    },
+    handleSubmit: function(e) {
+      e.preventDefault();
+
+      var person = {};
+
+      // add all input refs to an object and save to database
+      Object.keys(this.refs).forEach(function(inputFieldRef) {
+        person[inputFieldRef] = this.refs[inputFieldRef].getValue();
+      }.bind(this));
+
+      var fileReader = new FileReader();
+      fileReader.onload = function(e) {
+
+        person['image'] = e.target.result;
+
+        var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
+        ref.push(person);
+
+      };
+
+      fileReader.readAsDataURL(this.refs['image'].getInputDOMNode().files[0]);
+
+      this.setState({
+        formSubmitted: true
+      });
+
+      return;
+    },
+    render: function() {
+
+      if(!this.state.formSubmitted) {
+        var form = <form onSubmit={this.handleSubmit}>
+          <Input type="text" label="First Name" ref="firstName" placeholder="Andrew" required />
+          <Input type="text" label="Last Name" ref="lastName" placeholder="Golightly" required />
+          <Input type="file" label="Profile photo" accept="image/*" ref="image" required />
+          <Input type="text" label="City" placeholder="Minneapolis" ref="city" required />
+          <Input type="text" label="State/Province" placeholder="NJ" ref="state" required />
+          <Input type="select" label="Country" ref="country" required >
+            <option value="USA">USA</option>
+            <option value="Canada">Canada</option>
+          </Input>
+          <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" required />
+          <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" required />
+          <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" required />
+          <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block" />
+        </form>;
+      }
+
+      if(this.state.formSubmitted) {
+        var status = <Alert bsStyle="success">
+          Person successfully added!
+        </Alert>;
+      }
+
+      return (
+        <Grid>
+          <Row>
+            <Col xs={10} xsOffset={1} md={8} mdOffset={2}>
+              <h2>Add a new person</h2>
+              {status}
+              {form}
+            </Col>
+          </Row>
+        </Grid>
+      );
     }
+  });
 
-    return (
-      <div>
-        <SearchBar onUserInput={this.handleUserInput} />
-        { content }
-      </div>
-    );
-  }
-});
-
-var AddPersonPage = React.createClass({
-  getInitialState: function() {
-    return {
-      formSubmitted: false
-    };
-  },
-  handleSubmit: function(e) {
-    e.preventDefault();
-
-    var person = {};
-
-    // add all input refs to an object and save to database
-    Object.keys(this.refs).forEach(function(inputFieldRef) {
-      person[inputFieldRef] = this.refs[inputFieldRef].getValue();
-    }.bind(this));
-
-    var fileReader = new FileReader();
-    fileReader.onload = function(e) {
-
-      person['image'] = e.target.result;
-
-      var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
-      ref.push(person);
-
-    };
-
-    fileReader.readAsDataURL(this.refs['image'].getInputDOMNode().files[0]);
-
-    this.setState({
-      formSubmitted: true
-    });
-
-    return;
-  },
-  render: function() {
-
-    if(!this.state.formSubmitted) {
-      var form = <form onSubmit={this.handleSubmit}>
-        <Input type="text" label="First Name" ref="firstName" placeholder="Andrew" required />
-        <Input type="text" label="Last Name" ref="lastName" placeholder="Golightly" required />
-        <Input type="file" label="Profile photo" accept="image/*" ref="image" required />
-        <Input type="text" label="City" placeholder="Minneapolis" ref="city" required />
-        <Input type="text" label="State/Province" placeholder="NJ" ref="state" required />
-        <Input type="select" label="Country" ref="country" required >
-          <option value="USA">USA</option>
-          <option value="Canada">Canada</option>
-        </Input>
-        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" required />
-        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" required />
-        <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" required />
-        <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block" />
-      </form>;
+  var PeopleApp = React.createClass({
+    render: function () {
+      return (
+        <div>
+          <Header title='Baptiste Yoga Teachers' />
+          <RouteHandler />
+          <Footer />
+        </div>
+      );
     }
+  });
 
-    if(this.state.formSubmitted) {
-      var status = <Alert bsStyle="success">
-        Person successfully added!
-      </Alert>;
-    }
+  // declare our routes and their hierarchy
+  var routes = (
+    <Route handler={PeopleApp}>
+      <Route path="/" handler={HomePage}/>
+      <Route path="person/:id" handler={PersonPage}/>
+      <Route path="add" handler={AddPersonPage}/>
+      // <Route path="edit/:id" handler={EditPerson}/>
+    </Route>
+  );
 
-    return (
-      <Grid>
-        <Row>
-          <Col xs={10} xsOffset={1} md={8} mdOffset={2}>
-            <h2>Add a new person</h2>
-            {status}
-            {form}
-          </Col>
-        </Row>
-      </Grid>
-    );
-  }
-});
-
-var PeopleApp = React.createClass({
-  render: function () {
-    return (
-      <div>
-        <Header title='Baptiste Yoga Teachers' />
-        <RouteHandler />
-        <Footer />
-      </div>
-    );
-  }
-});
-
-// declare our routes and their hierarchy
-var routes = (
-  <Route handler={PeopleApp}>
-    <Route path="/" handler={HomePage}/>
-    <Route path="person/:id" handler={PersonPage}/>
-    <Route path="add" handler={AddPersonPage}/>
-  </Route>
-);
-
-Router.run(routes, Router.HashLocation, (Root) => {
-  React.render(<Root/>, document.body);
-});
+  Router.run(routes, Router.HashLocation, (Root) => {
+    React.render(<Root/>, document.body);
+  });

@@ -40,8 +40,7 @@ var appFiles = {
   assets: [appDirectory.src + '/images/*'],
   scss: appDirectory.src + '/scss/pd.scss',
   html: appDirectory.src + '/*.html',
-  fonts: appDirectory.npmDir + '/font-awesome/fonts/*',
-  vendorJS: [appDirectory.npmDir + '/jquery/dist/jquery.js', appDirectory.npmDir + '/react/dist/react.js']
+  fonts: appDirectory.npmDir + '/font-awesome/fonts/*'
 };
 
 // end: location of directories and files
