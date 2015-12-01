@@ -36,14 +36,16 @@ var SearchBar = React.createClass({
       <Grid>
         <Row>
           <Col xs={12} md={6} mdOffset={3}>
-            <Row>
-              <Col xs={8} >
-                <Input type="search" bsSize="large" placeholder="Marilyn Monroe" onChange={this.onSearchChange} value={this.state.searchText}/>
-              </Col>
-              <Col xs={4} >
-                <Button bsStyle="primary" bsSize="large" onClick={this.handleSearch} >Search</Button>
-              </Col>
-            </Row>
+            <form onSubmit={this.handleSearch}>
+              <Row>
+                <Col xs={8} >
+                  <Input type="search" bsSize="large" placeholder="Marilyn Monroe" onChange={this.onSearchChange} value={this.state.searchText}/>
+                </Col>
+                <Col xs={4} >
+                  <ButtonInput type="submit" value="Search" bsStyle="primary" bsSize="large" />
+                </Col>
+              </Row>
+            </form>
           </Col>
         </Row>
       </Grid>
