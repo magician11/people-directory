@@ -85,6 +85,7 @@ var PersonPage = React.createClass({
                   <p><strong>State/Province:</strong> {this.state.person.state}</p>
                   <p><strong>Studio:</strong> <a href={this.state.person.studioURL}>{this.state.person.studioName}</a></p>
                 </Panel>
+                <Button bsStyle="info"><Link to={'/edit/' + this.props.params.id}>Edit profile</Link></Button>
               </Col>
             </Row>
           </Col>
@@ -96,7 +97,6 @@ var PersonPage = React.createClass({
                 </p>
               )
             })}
-            <p><Link to={'/edit/' + this.props.params.id}>Edit</Link></p>
           </Col>
         </Row>
       </Grid>

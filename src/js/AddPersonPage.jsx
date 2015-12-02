@@ -47,6 +47,7 @@ var AddPersonPage = React.createClass({
         <Input type="select" label="Country" ref="country" required >
           <option value="USA">USA</option>
           <option value="Canada">Canada</option>
+          <option value="Nigeria">Nigeria</option>
         </Input>
         <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" required />
         <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" required />
