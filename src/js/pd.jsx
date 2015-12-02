@@ -5,71 +5,10 @@ import React from 'react';
 import Firebase from 'firebase';
 import FirebaseUtil from 'firebase-util';
 import EditPerson from './EditPerson.jsx';
-
-var Header = React.createClass({
-  render: function () {
-    return (
-      <Navbar brand={<Link to='/'>{this.props.title}</Link>} inverse toggleNavKey={0}>
-        <Nav right eventKey={0}>
-          <NavItem eventKey={1} href="/#/">View Everyone</NavItem>
-          <NavItem eventKey={2} href="/#/add">Add Person</NavItem>
-        </Nav>
-      </Navbar>
-    );
-  }
-});
-
-var SearchBar = React.createClass({
-  getInitialState: function() {
-    return {
-      searchText: this.props.searchText
-    };
-  },
-  onSearchChange: function(e) {
-    this.setState({searchText:e.target.value});
-  },
-  handleSearch: function(e) {
-    this.props.onUserInput(this.state.searchText, 'lastName');
-  },
-  render: function () {
-    return (
-      <Grid>
-        <Row>
-          <Col xs={12} md={6} mdOffset={3}>
-            <form onSubmit={this.handleSearch}>
-              <Row>
-                <Col xs={8} >
-                  <Input type="search" bsSize="large" placeholder="Marilyn Monroe" onChange={this.onSearchChange} value={this.state.searchText}/>
-                </Col>
-                <Col xs={4} >
-                  <ButtonInput type="submit" value="Search" bsStyle="primary" bsSize="large" />
-                </Col>
-              </Row>
-            </form>
-          </Col>
-        </Row>
-      </Grid>
-    );
-  }
-});
-
-var PersonListItem = React.createClass({
-  render: function () {
-
-    return (
-      <Thumbnail
-        src={this.props.person.image}
-        alt={this.props.person.firstName + ' ' + this.props.person.lastName}
-        className="text-center"
-        key={this.props.firebaseKey}
-        >
-        <h3>{this.props.person.firstName} {this.props.person.lastName}</h3>
-        <p>{this.props.person.city}, {this.props.person.state} ({this.props.person.country})</p>
-        <p><Link to={'/person/' + this.props.firebaseKey}>view details &rarr;</Link></p>
-      </Thumbnail>
-    );
-  }
-});
+import SearchBar from './SearchBar.jsx';
+import AddPersonPage from './AddPersonPage.jsx';
+import PersonListItem from './PersonListItem.jsx';
+import Header from './Header.jsx';
 
 var PeopleList = React.createClass({
   render: function () {
@@ -229,79 +168,6 @@ var HomePage = React.createClass({
     }
   });
 
-  var AddPersonPage = React.createClass({
-    getInitialState: function() {
-      return {
-        formSubmitted: false
-      };
-    },
-    handleSubmit: function(e) {
-      e.preventDefault();
-
-      var person = {};
-
-      // add all input refs to an object and save to database
-      Object.keys(this.refs).forEach(function(inputFieldRef) {
-        person[inputFieldRef] = this.refs[inputFieldRef].getValue();
-      }.bind(this));
-
-      var fileReader = new FileReader();
-      fileReader.onload = function(e) {
-
-        person['image'] = e.target.result;
-
-        var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
-        ref.push(person);
-
-      };
-
-      fileReader.readAsDataURL(this.refs['image'].getInputDOMNode().files[0]);
-
-      this.setState({
-        formSubmitted: true
-      });
-
-      return;
-    },
-    render: function() {
-
-      if(!this.state.formSubmitted) {
-        var form = <form onSubmit={this.handleSubmit}>
-          <Input type="text" label="First Name" ref="firstName" placeholder="Andrew" required />
-          <Input type="text" label="Last Name" ref="lastName" placeholder="Golightly" required />
-          <Input type="file" label="Profile photo" accept="image/*" ref="image" required />
-          <Input type="text" label="City" placeholder="Minneapolis" ref="city" required />
-          <Input type="text" label="State/Province" placeholder="NJ" ref="state" required />
-          <Input type="select" label="Country" ref="country" required >
-            <option value="USA">USA</option>
-            <option value="Canada">Canada</option>
-          </Input>
-          <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" required />
-          <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" required />
-          <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" required />
-          <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block" />
-        </form>;
-      }
-
-      if(this.state.formSubmitted) {
-        var status = <Alert bsStyle="success">
-          Person successfully added!
-        </Alert>;
-      }
-
-      return (
-        <Grid>
-          <Row>
-            <Col xs={10} xsOffset={1} md={8} mdOffset={2}>
-              <h2>Add a new person</h2>
-              {status}
-              {form}
-            </Col>
-          </Row>
-        </Grid>
-      );
-    }
-  });
 
   var PeopleApp = React.createClass({
     render: function () {
@@ -321,7 +187,7 @@ var HomePage = React.createClass({
       <Route path="/" handler={HomePage}/>
       <Route path="person/:id" handler={PersonPage}/>
       <Route path="add" handler={AddPersonPage}/>
-      // <Route path="edit/:id" handler={EditPerson}/>
+      <Route path="edit/:id" handler={EditPerson}/>
     </Route>
   );
 
