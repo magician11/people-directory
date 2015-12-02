@@ -9,6 +9,12 @@ $font-size-base: 15px;
   flex-wrap: wrap;
 }
 
+.people-list img {
+    object-fit: cover;
+    height: 300px;
+    width: 200px;
+}
+
 .people-list > div {
   flex-basis: calc(50% - 2rem);
   margin: 1rem;
