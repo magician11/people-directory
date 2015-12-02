@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Grid, Row, Col, ButtonInput } from 'react-bootstrap';
+import { Input, Grid, Row, Col, ButtonInput, Alert } from 'react-bootstrap';
 
 var AddPersonPage = React.createClass({
   getInitialState: function() {
@@ -21,6 +21,7 @@ var AddPersonPage = React.createClass({
     fileReader.onload = function(e) {
 
       person['image'] = e.target.result;
+      person['listInDirectory'] = {baptiste: true};
 
       var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
       ref.push(person);
