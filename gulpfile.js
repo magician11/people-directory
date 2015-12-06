@@ -52,15 +52,6 @@ var appFiles = {
 
 gulp.task('build-dist', ['scss', 'scripts', 'html', 'assets']);
 
-// // copy across vendor files
-// gulp.task('fonts', function() {
-//
-//   // get fonts
-//   gulp.src(appFiles.fonts)
-//   .pipe(gulp.dest(appDirectory.dist + '/fonts'));
-//
-// });
-
 // process our Sass
 gulp.task('scss', function() {
   return gulp.src(appFiles.scss)
@@ -88,8 +79,8 @@ gulp.task('scripts', function() {
     this.emit('end');
   })
   .pipe(source('bundle.js'))
-  // .pipe(buffer())
-  // .pipe(uglify())
+  .pipe(buffer())
+  .pipe(uglify())
   .pipe(gulp.dest(appDirectory.dist + '/js'));
 });
 
