@@ -43,7 +43,6 @@ var EditPerson = React.createClass({
     this.ref = new Firebase("https://people-directory.firebaseio.com/baptiste/" + this.props.params.id);
     this.ref.on('value', function(data) {
 
-      console.log(data.val());
       this.setState({person: data.val()});
 
     }.bind(this));
@@ -52,25 +51,7 @@ var EditPerson = React.createClass({
     e.preventDefault();
 
     var person = {};
-
-    // add all input refs to an object and save to database
-    // Object.keys(this.refs).forEach(function(inputFieldRef) {
-    //   person[inputFieldRef] = this.refs[inputFieldRef].getValue();
-    // }.bind(this));
-    console.log(this.state.person);
-    //var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
-    console.log('updating firebase');
-    //console.log(this.ref);
     this.ref.set(this.state.person);
-    this.ref.on('value', function(data) {
-
-      console.log(data.val());
-
-    });
-
-    //
-
-
     this.setState({
       formSubmitted: true
     });
