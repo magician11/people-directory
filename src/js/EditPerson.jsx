@@ -11,6 +11,7 @@ var EditPerson = React.createClass({
         lastName: '',
         city: '',
         state: '',
+        image: '',
         country: '',
         description: '',
         studioName: '',
@@ -20,14 +21,29 @@ var EditPerson = React.createClass({
     };
   },
   handleInputChange: function(e) {
+
     var nextState = this.state.person;
-    nextState[e.target.name] = e.target.value;
-    this.setState({person: nextState});
+
+    if(e.target.type === 'file') {
+
+      var fileReader = new FileReader();
+      fileReader.onload = function(file) {
+
+        nextState['image'] = file.target.result;
+        this.setState({person: nextState});
+      }.bind(this);
+
+      fileReader.readAsDataURL(this.refs['image'].getInputDOMNode().files[0]);
+    } else {
+      nextState[e.target.name] = e.target.value;
+      this.setState({person: nextState});
+    }
   },
   componentWillMount: function() {
     this.ref = new Firebase("https://people-directory.firebaseio.com/baptiste/" + this.props.params.id);
     this.ref.on('value', function(data) {
 
+      console.log(data.val());
       this.setState({person: data.val()});
 
     }.bind(this));
@@ -53,17 +69,7 @@ var EditPerson = React.createClass({
     });
 
     //
-    // var fileReader = new FileReader();
-    // fileReader.onload = function(e) {
-    //
-    //   person['image'] = e.target.result;
-    //
-    //   var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
-    //   ref.push(person);
-    //
-    // };
-    //
-    // fileReader.readAsDataURL(this.refs['image'].getInputDOMNode().files[0]);
+
 
     this.setState({
       formSubmitted: true
@@ -75,7 +81,8 @@ var EditPerson = React.createClass({
       var form = <form onSubmit={this.handleSubmit}>
         <Input type="text" label="First Name" name="firstName" value={this.state.person.firstName} onChange={this.handleInputChange} required />
         <Input type="text" label="Last Name" name="lastName" value={this.state.person.lastName} onChange={this.handleInputChange} required />
-
+        <img className="img-circle person-thumbnail" src={this.state.person.image} />
+        <Input type="file" label="Profile photo" accept="image/*" name="image" ref="image" onChange={this.handleInputChange} />
         <Input type="text" label="City" value={this.state.person.city} name="city" onChange={this.handleInputChange} required />
         <Input type="text" label="State/Province" value={this.state.person.state} name="state" onChange={this.handleInputChange} required />
         <Input type="select" label="Country" value={this.state.person.country} name="country" onChange={this.handleInputChange} required >
