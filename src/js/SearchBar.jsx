@@ -4,8 +4,12 @@ import { Input, Grid, Row, Col, ButtonInput, ButtonGroup, Button } from 'react-b
 var SearchBar = React.createClass({
   getInitialState: function() {
     return {
-      searchText: this.props.searchText
+      searchText: this.props.searchText,
+      searchField: 'firstName'
     };
+  },
+  changeSearchField: function(e) {
+    this.setState({searchField: e.target.name});
   },
   onSearchChange: function(e) {
     let searchVal = e.target.value;
@@ -14,12 +18,9 @@ var SearchBar = React.createClass({
   },
   handleSearch: function(e) {
     e.preventDefault();
-    this.props.onUserInput(this.state.searchText, 'firstName');
+    this.props.onUserInput(this.state.searchText, this.state.searchField);
   },
   render: function () {
-    // <input type="radio" name="searchField" value="lastName" id="lastName"><label for="lastName">Last Name</label>
-    // <input type="radio" name="searchField" value="firstName" id="firstName" checked><label for="firstName">First Name</label>
-    // <input type="radio" name="searchField" value="city" id="city"><label for="city">City</label>
     return (
       <Grid>
         <Row>
@@ -36,13 +37,13 @@ var SearchBar = React.createClass({
               <Row>
                 <Col xs={8} >
                   <ButtonGroup>
-                    <Button active>
+                    <Button active={this.state.searchField === 'firstName'} onClick={this.changeSearchField} name="firstName">
                       First name
                     </Button>
-                    <Button>
+                    <Button active={this.state.searchField === 'lastName'} onClick={this.changeSearchField} name="lastName">
                       Last name
                     </Button>
-                    <Button>
+                    <Button active={this.state.searchField === 'city'} onClick={this.changeSearchField} name="city">
                       City
                     </Button>
                   </ButtonGroup>
