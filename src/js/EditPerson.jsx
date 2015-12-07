@@ -68,7 +68,7 @@ var EditPerson = React.createClass({
         <Input type="text" label="State/Province" value={this.state.person.state} name="state" onChange={this.handleInputChange} required />
         <Input type="select" label="Country" value={this.state.person.country} name="country" onChange={this.handleInputChange} required >
           <option value="USA">USA</option>
-          <option value="Canada">Canada</option>
+          <option value="CAN">Canada</option>
           <option value="Nigeria">Nigeria</option>
         </Input>
         <Input type="text" label="Studio" value={this.state.person.studioName} name="studioName" onChange={this.handleInputChange} required />

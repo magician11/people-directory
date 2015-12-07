@@ -28,7 +28,7 @@ var SearchBar = React.createClass({
             <form onSubmit={this.handleSearch}>
               <Row>
                 <Col xs={8} >
-                  <Input type="search" bsSize="large" placeholder="Marilyn Monroe" onChange={this.onSearchChange} value={this.state.searchText}/>
+                  <Input type="search" bsSize="large" onChange={this.onSearchChange} value={this.state.searchText}/>
                 </Col>
                 <Col xs={4} >
                   <ButtonInput type="submit" value="Search" bsStyle="primary" bsSize="large" />
