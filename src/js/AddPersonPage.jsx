@@ -1,11 +1,28 @@
 import React from 'react';
 import { Input, Grid, Row, Col, ButtonInput, Alert } from 'react-bootstrap';
+import $ from 'jquery';
 
 var AddPersonPage = React.createClass({
   getInitialState: function() {
     return {
-      formSubmitted: false
+      formSubmitted: false,
+      countryData: []
     };
+  },
+  componentDidMount: function() {
+    $.get('https://cdn.rawgit.com/mledoze/countries/master/dist/countries.json', function(allCountryData) {
+      // console.log(allCountryData);
+      let newCountryData = [];
+      allCountryData.forEach(function(country) {
+        newCountryData.push({name: country.name.common, code: country.cca3});
+      });
+
+      newCountryData.sort(function(a, b) {
+        return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);
+      });
+
+      this.setState({countryData: newCountryData});
+    }.bind(this));
   },
   handleSubmit: function(e) {
     e.preventDefault();
@@ -46,9 +63,9 @@ var AddPersonPage = React.createClass({
         <Input type="text" label="City" placeholder="Minneapolis" ref="city" required />
         <Input type="text" label="State/Province" placeholder="NJ" ref="state" required />
         <Input type="select" label="Country" ref="country" required >
-          <option value="USA">USA</option>
-          <option value="Canada">Canada</option>
-          <option value="Nigeria">Nigeria</option>
+          {this.state.countryData.map(function(country){
+            return <option value={country.code} key={country.code}>{country.name}</option>;
+            })}
         </Input>
         <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" required />
         <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" required />
