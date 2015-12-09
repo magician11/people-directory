@@ -11,7 +11,6 @@ var AddPersonPage = React.createClass({
   },
   componentDidMount: function() {
     $.get('https://cdn.rawgit.com/mledoze/countries/master/dist/countries.json', function(allCountryData) {
-      // console.log(allCountryData);
       let newCountryData = [];
       allCountryData.forEach(function(country) {
         newCountryData.push({name: country.name.common, code: country.cca3});
@@ -61,14 +60,14 @@ var AddPersonPage = React.createClass({
         <Input type="text" label="Last Name" ref="lastName" placeholder="Golightly" required />
         <Input type="file" label="Profile photo" accept="image/*" ref="image" required />
         <Input type="text" label="City" placeholder="Minneapolis" ref="city" required />
-        <Input type="text" label="State/Province" placeholder="NJ" ref="state" required />
+        <Input type="text" label="State/Province" placeholder="NJ" ref="state" />
         <Input type="select" label="Country" ref="country" required >
           {this.state.countryData.map(function(country){
             return <option value={country.code} key={country.code}>{country.name}</option>;
             })}
         </Input>
-        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" required />
-        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" required />
+        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" />
+        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" />
         <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" required />
         <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block" />
       </form>;

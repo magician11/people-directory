@@ -82,14 +82,14 @@ var EditPerson = React.createClass({
         <img className="img-circle person-thumbnail" src={this.state.person.image} />
         <Input type="file" label="Profile photo" accept="image/*" name="image" ref="image" onChange={this.handleInputChange} />
         <Input type="text" label="City" value={this.state.person.city} name="city" onChange={this.handleInputChange} required />
-        <Input type="text" label="State/Province" value={this.state.person.state} name="state" onChange={this.handleInputChange} required />
+        <Input type="text" label="State/Province" value={this.state.person.state} name="state" onChange={this.handleInputChange} />
         <Input type="select" label="Country" value={this.state.person.country} name="country" onChange={this.handleInputChange} required >
           {this.state.countryData.map(function(country){
             return <option value={country.code} key={country.code}>{country.name}</option>;
             })}
           </Input>
-          <Input type="text" label="Studio" value={this.state.person.studioName} name="studioName" onChange={this.handleInputChange} required />
-          <Input type="url" label="Studio Website" value={this.state.person.studioURL} name="studioURL" onChange={this.handleInputChange} required />
+          <Input type="text" label="Studio" value={this.state.person.studioName} name="studioName" onChange={this.handleInputChange} />
+          <Input type="url" label="Studio Website" value={this.state.person.studioURL} name="studioURL" onChange={this.handleInputChange} />
           <Input type="textarea" label="Description" value={this.state.person.description} name="description" onChange={this.handleInputChange} required />
           <ButtonInput type="submit" value="Save" bsStyle="primary" bsSize="large" className="center-block" />
         </form>;
