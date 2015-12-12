@@ -43,8 +43,11 @@ var SearchBar = React.createClass({
                     <Button active={this.state.searchField === 'lastName'} onClick={this.changeSearchField} name="lastName">
                       Last name
                     </Button>
-                    <Button active={this.state.searchField === 'city'} onClick={this.changeSearchField} name="city">
-                      City
+                    <Button active={this.state.searchField === 'state'} onClick={this.changeSearchField} name="state">
+                      State
+                    </Button>
+                    <Button active={this.state.searchField === 'country'} onClick={this.changeSearchField} name="country">
+                      Country
                     </Button>
                   </ButtonGroup>
                 </Col>
