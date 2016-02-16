@@ -1,5 +1,6 @@
 import React from 'react';
 import { Input, Grid, Row, Col, ButtonInput, Alert } from 'react-bootstrap';
+import { Form, ValidatedInput, FileValidator } from 'react-bootstrap-validation';
 import $ from 'jquery';
 
 var AddPersonPage = React.createClass({
@@ -23,8 +24,7 @@ var AddPersonPage = React.createClass({
       this.setState({countryData: newCountryData});
     }.bind(this));
   },
-  handleSubmit: function(e) {
-    e.preventDefault();
+  handleValidSubmit: function(values) {
 
     var person = {};
 
@@ -34,63 +34,92 @@ var AddPersonPage = React.createClass({
     }.bind(this));
 
     var fileReader = new FileReader();
-    fileReader.onload = function(e) {
+    fileReader.onload = function(event) {
 
-      person['image'] = e.target.result;
+      person['image'] = event.target.result;
       person['listInDirectory'] = {baptiste: true};
 
       var ref = new Firebase("https://people-directory.firebaseio.com/baptiste");
-      ref.push(person);
-
-    };
+      ref.push(person, function(error) {
+        if(error) {
+          console.log(error);
+        } else {
+          this.setState({
+            formSubmitted: true
+          });
+        }
+      }.bind(this));
+    }.bind(this);
 
     fileReader.readAsDataURL(this.refs['image'].getInputDOMNode().files[0]);
 
-    this.setState({
-      formSubmitted: true
-    });
-
     return;
+  },
+  handleInvalidSubmit: function(errors) {
+    console.log(errors);
   },
   render: function() {
 
     if(!this.state.formSubmitted) {
-      var form = <form onSubmit={this.handleSubmit}>
+      var form =
+      <Form
+        onValidSubmit={this.handleValidSubmit}
+        onInvalidSubmit={this.handleInvalidSubmit}>
         <Input type="text" label="First Name" ref="firstName" placeholder="Andrew" required />
         <Input type="text" label="Last Name" ref="lastName" placeholder="Golightly" required />
-        <Input type="file" label="Profile photo" accept="image/*" ref="image" required />
+        <ValidatedInput
+          ref="image"
+          name="file"
+          type='file'
+          label='Profile photo'
+          validate={files => {
+            if (FileValidator.isEmpty(files)) {
+              return 'Please select an image for a profile photo';
+            }
+
+            if (!FileValidator.isTotalSize(files, 10000, 409600)) {
+              return 'Image is too big. Max size is 400Kb.';
+            }
+
+            if (FileValidator.isExtension( files, [ 'image/*'])) {
+              return 'Please only upload an image';
+            }
+
+            return true;
+          }}
+          />
         <Input type="text" label="City" placeholder="Minneapolis" ref="city" required />
         <Input type="text" label="State/Province" placeholder="NJ" ref="state" />
         <Input type="select" label="Country" ref="country" required >
           {this.state.countryData.map(function(country){
             return <option value={country.code} key={country.code}>{country.name}</option>;
             })}
-        </Input>
-        <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" />
-        <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" />
-        <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" required />
-        <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block" />
-      </form>;
+          </Input>
+          <Input type="text" label="Studio" placeholder="Power Yoga Canada" ref="studioName" />
+          <Input type="url" label="Studio Website" placeholder="http://www.poweryogacanada.com/" ref="studioURL" />
+          <Input type="textarea" label="Description" placeholder="Tell us about this person..." ref="description" required />
+          <ButtonInput type="submit" value="Add Person" bsStyle="primary" bsSize="large" className="center-block" />
+        </Form>;
+      }
+
+      if(this.state.formSubmitted) {
+        var status = <Alert bsStyle="success">
+          Person successfully added!
+        </Alert>;
+      }
+
+      return (
+        <Grid>
+          <Row>
+            <Col xs={10} xsOffset={1} md={8} mdOffset={2}>
+              <h2>Add a new person</h2>
+              {status}
+              {form}
+            </Col>
+          </Row>
+        </Grid>
+      );
     }
+  });
 
-    if(this.state.formSubmitted) {
-      var status = <Alert bsStyle="success">
-        Person successfully added!
-      </Alert>;
-    }
-
-    return (
-      <Grid>
-        <Row>
-          <Col xs={10} xsOffset={1} md={8} mdOffset={2}>
-            <h2>Add a new person</h2>
-            {status}
-            {form}
-          </Col>
-        </Row>
-      </Grid>
-    );
-  }
-});
-
-export default AddPersonPage;
+  export default AddPersonPage;
