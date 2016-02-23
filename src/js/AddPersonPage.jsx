@@ -7,7 +7,8 @@ var AddPersonPage = React.createClass({
   getInitialState: function() {
     return {
       formSubmitted: false,
-      countryData: []
+      countryData: [],
+      formSubmitting: false
     };
   },
   componentDidMount: function() {
@@ -25,6 +26,10 @@ var AddPersonPage = React.createClass({
     }.bind(this));
   },
   handleValidSubmit: function(values) {
+
+    this.setState({
+      formSubmitting: true
+    });
 
     var person = {};
 
@@ -45,7 +50,8 @@ var AddPersonPage = React.createClass({
           console.log(error);
         } else {
           this.setState({
-            formSubmitted: true
+            formSubmitted: true,
+            formSubmitting: false
           });
         }
       }.bind(this));
@@ -60,7 +66,7 @@ var AddPersonPage = React.createClass({
   },
   render: function() {
 
-    if(!this.state.formSubmitted) {
+    if(!this.state.formSubmitted && !this.state.formSubmitting) {
       var form =
       <Form
         onValidSubmit={this.handleValidSubmit}
@@ -106,20 +112,25 @@ var AddPersonPage = React.createClass({
         var status = <Alert bsStyle="success">
           Person successfully added!
         </Alert>;
+      } else if(this.state.formSubmitting) {
+        var status = <div className="text-center">
+          <i className="fa fa-cog fa-spin fa-5x"></i><br/>
+            <h4>submitting...</h4>
+          </div>;
+        }
+
+        return (
+          <Grid>
+            <Row>
+              <Col xs={10} xsOffset={1} md={8} mdOffset={2}>
+                <h2>Add a new person</h2>
+                {status}
+                {form}
+              </Col>
+            </Row>
+          </Grid>
+        );
       }
+    });
 
-      return (
-        <Grid>
-          <Row>
-            <Col xs={10} xsOffset={1} md={8} mdOffset={2}>
-              <h2>Add a new person</h2>
-              {status}
-              {form}
-            </Col>
-          </Row>
-        </Grid>
-      );
-    }
-  });
-
-  export default AddPersonPage;
+    export default AddPersonPage;
